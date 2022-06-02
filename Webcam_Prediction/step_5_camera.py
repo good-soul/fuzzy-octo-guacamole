@@ -19,6 +19,7 @@ def main():
 
     # create runnable session with exported model
     ort_session = ort.InferenceSession("signlanguage.onnx")
+    # ort_session = ort.InferenceSession("model_fastai_224.onnx")
 
     cap = cv2.VideoCapture(0)
     while True:
@@ -28,10 +29,12 @@ def main():
         # preprocess data
         frame = center_crop(frame)
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-        x = cv2.resize(frame, (28, 28))
+        # x = cv2.resize(frame, (28, 28))
+        x = cv2.resize(frame, (150, 150))
         x = (x - mean) / std
 
-        x = x.reshape(1, 1, 28, 28).astype(np.float32)
+        # x = x.reshape(1, 1, 28, 28).astype(np.float32)
+        x = x.reshape(1, 1, 150, 150).astype(np.float32)
         y = ort_session.run(None, {'input': x})[0]
 
         index = np.argmax(y, axis=1)

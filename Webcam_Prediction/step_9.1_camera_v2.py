@@ -47,7 +47,7 @@ def main():
         x = cv2.resize(frame, (28, 28))
         x2 = (x - mean) / std
 
-        x3 = x2.reshape(1, 1, 28, 28).astype(np.float32)
+        x3 = x.reshape(1, 1, 28, 28).astype(np.float32)
         y = ort_session.run(None, {'input': x3})[0]
 
         index = np.argmax(y, axis=1)

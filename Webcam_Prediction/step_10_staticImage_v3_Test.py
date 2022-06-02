@@ -1,4 +1,9 @@
 # Uses image from file for testing
+#
+# Run as "python step_10_staticImage_v3_Test.py 4_grayscale.png"
+# or
+# Run as "python step_10_staticImage_v3_Test.py 5_resize.png"
+#
 
 import os
 import sys

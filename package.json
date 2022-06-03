@@ -1,0 +1,19 @@
+{
+  "name": "fuzzy-octo-guacamole",
+  "version": "1.0.0",
+  "description": "detecting hand signs over the web",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitserv:good-soul/fuzzy-octo-guacamole.git"
+  },
+  "author": "Jannu Sudhakar",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.1",
+    "formidable": "^2.0.1"
+  }
+}

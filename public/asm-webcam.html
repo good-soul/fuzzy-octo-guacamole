@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>webcam testing</title>
+    <style>
+      #video {
+        border: 0px solid black;
+        box-shadow: 2px 2px 3px black;
+        width:400px;
+        height:300px;
+      }
+
+      #photo {
+        border: 1px solid black;
+        box-shadow: 2px 2px 3px black;
+        width:400px;
+        height:300px;
+        position: absolute;
+      }
+
+      #canvas {
+        display:none;
+      }
+      .camerabox{
+        display: grid;
+        grid-template-columns: auto auto auto;
+        grid-template-rows: auto auto auto;
+        width: 480px;
+      }
+      #y-center{
+          grid-area: 1/1/2/3;
+	  height: 300px;
+	  z-index: 10;
+          -webkit-appearance: slider-vertical;
+      }
+      #x-center{
+	  width: 400px;
+	  z-index: 10;
+          grid-area: 2/3/3/4;
+      }
+      #size-slider{
+	  width: 400px;
+          grid-area: 3/3/4/4;
+	  z-index: 10;
+      }
+      #sign-bounding-box, #photo-sign-bounding-box{
+        background-color: transparent;
+        position: relative;
+        border: 2px solid black;
+        width: 50%;
+        height: 50%;
+        bottom: 75%;
+        left: 25%;
+      }
+      .camera {
+        width: 400px;
+        height: 300px;
+        display:inline-block;
+        grid-area: 1/3/2/4;
+      }
+
+      .output {
+        width: 420px;
+        display:inline-block;
+        vertical-align: top;
+        margin-left: 100px;
+      }
+
+      #startbutton {
+        display:block;
+        background-color: rgba(0, 150, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        box-shadow: 0px 0px 1px 2px rgba(0, 0, 0, 0.2);
+        font-size: 14px;
+        font-family: "Lucida Grande", "Arial", sans-serif;
+        color: rgba(255, 255, 255, 1.0);
+        grid-area: 2/1/4/3;
+      }
+
+      .inputArea {
+        margin: 30px auto;
+        font-size: 16px;
+        width: 900px;
+        font-family: "Lucida Grande", "Arial", sans-serif;
+        display: grid;
+        grid-template-columns: auto auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="inputArea">
+      <div class="camerabox">
+        <input type="range" orient="vertical" min="0" max="100" value="75" class="y-slider" id="y-center">
+        <div class="camera">
+          <video id="video">Video stream not available.</video>
+          <div id="sign-bounding-box"></div>
+        </div>
+        <button id="startbutton">Take photo</button>
+        <input type="range" min="0" max="100" value="25" class="x-slider" id="x-center">
+        <input type="range" min="0" max="100" value="75" class="x-slider" id="size-slider">
+      </div>
+      <canvas id="canvas">
+      </canvas>
+      <div class="output">
+        <img id="photo" alt="The screen capture will appear in this box.">
+      </div>
+    </div>
+    <h1 style="text-align: center;" id="model-prediction"></h1>
+  </body>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/camanjs/4.0.0/caman.full.min.js"></script>
+  <script>
+    var xCenterSlider = document.getElementById('x-center');
+    var yCenterSlider = document.getElementById('y-center');
+    var sizeSlider = document.getElementById('size-slider');
+
+    var xcenter = xCenterSlider.value * 4;
+    var ycenter = 300 - yCenterSlider.value * 3;
+    var size = Math.min(xcenter, 400 - xcenter, (300 - ycenter), ycenter) * sizeSlider.value / 50;
+    var boxStartX = xcenter - size/2;
+    var boxEndX = xcenter + size/2;
+    var boxStartY = (ycenter - size/2);
+    var boxEndY = (ycenter + size/2);
+
+    document.getElementById('sign-bounding-box').style.width = `${size}px`;
+    document.getElementById('sign-bounding-box').style.left = `${boxStartX}px`;
+    document.getElementById('sign-bounding-box').style.height = `${size}px`;
+    document.getElementById('sign-bounding-box').style.bottom = `${300 - boxStartY}px`;
+
+    const adjustBox = function(){
+	xcenter = xCenterSlider.value * 4;
+	ycenter = 300 - yCenterSlider.value * 3;
+	size = Math.min(xcenter, 400 - xcenter, (300 - ycenter), ycenter) * sizeSlider.value / 50;
+	boxStartX = xcenter - size/2;
+	boxEndX = xcenter + size/2;
+	boxStartY = (ycenter - size/2);
+	boxEndY = (ycenter + size/2);
+	document.getElementById('sign-bounding-box').style.width = `${size}px`;
+	document.getElementById('sign-bounding-box').style.left = `${boxStartX}px`;
+	document.getElementById('sign-bounding-box').style.height = `${size}px`;
+	document.getElementById('sign-bounding-box').style.bottom = `${300 - boxStartY}px`;
+    }
+    
+    xCenterSlider.oninput = adjustBox
+    yCenterSlider.oninput = adjustBox
+    sizeSlider.oninput = adjustBox
+    
+  </script>
+  <script>
+    (function() {
+      // The width and height of the captured photo. We will set the
+      // width to the value defined here, but the height will be
+      // calculated based on the aspect ratio of the input stream.
+
+      var width = 400;    // We will scale the photo width to this
+      var height = 0;     // This will be computed based on the input stream
+
+      // |streaming| indicates whether or not we're currently streaming
+      // video from the camera. Obviously, we start at false.
+
+      var streaming = false;
+
+      // The various HTML elements we need to configure or control. These
+      // will be set by the startup() function.
+
+      var video = null;
+      var canvas = null;
+      var photo = null;
+      var startbutton = null;
+
+      function showViewLiveResultButton() {
+        if (window.self !== window.top) {
+          // Ensure that if our document is in a frame, we get the user
+          // to first open it in its own tab or window. Otherwise, it
+          // won't be able to request permission for camera access.
+          document.querySelector(".inputArea").remove();
+          const button = document.createElement("button");
+          button.textContent = "View live result of the example code above";
+          document.body.append(button);
+          button.addEventListener('click', () => window.open(location.href));
+          return true;
+        }
+        return false;
+      }
+
+      function startup() {
+        if (showViewLiveResultButton()) { return; }
+        video = document.getElementById('video');
+        canvas = document.getElementById('canvas');
+        photo = document.getElementById('photo');
+        startbutton = document.getElementById('startbutton');
+
+        navigator.mediaDevices.getUserMedia({video: true, audio: false})
+        .then(function(stream) {
+          video.srcObject = stream;
+          video.play();
+        })
+        .catch(function(err) {
+          console.log("An error occurred: " + err);
+        });
+
+        video.addEventListener('canplay', function(ev){
+          if (!streaming) {
+            height = video.videoHeight / (video.videoWidth/width);
+
+            // Firefox currently has a bug where the height can't be read from
+            // the video, so we will make assumptions if this happens.
+
+            if (isNaN(height)) {
+              height = width / (4/3);
+            }
+
+            video.setAttribute('width', width);
+            video.setAttribute('height', height);
+            canvas.setAttribute('width', width);
+            canvas.setAttribute('height', height);
+            streaming = true;
+          }
+        }, false);
+
+        startbutton.addEventListener('click', function(ev){
+            window.setTimeout(takepicture,3000);
+            ev.preventDefault();
+        }, false);
+
+        clearphoto();
+      }
+
+      // Fill the photo with an indication that none has been
+      // captured.
+
+      function clearphoto() {
+        var context = canvas.getContext('2d');
+        context.fillStyle = "#AAA";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        var data = canvas.toDataURL('image/png');
+        photo.setAttribute('src', data);
+      }
+
+      // Capture a photo by fetching the current contents of the video
+      // and drawing it into a canvas, then converting that to a PNG
+      // format data URL. By drawing it on an offscreen canvas and then
+      // drawing that to the screen, we can change its size and/or apply
+      // other changes before drawing it.
+	function dataURItoBlob(dataURI) {
+	    // convert base64 to raw binary data held in a string
+	    // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+	    var byteString = atob(dataURI.split(',')[1]);
+	    
+	    // separate out the mime component
+	    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+	    
+	    // write the bytes of the string to an ArrayBuffer
+	    var ab = new ArrayBuffer(byteString.length);
+	    
+	    // create a view into the buffer
+	    var ia = new Uint8Array(ab);
+	    
+	    // set the bytes of the buffer to the correct values
+	    for (var i = 0; i < byteString.length; i++) {
+		ia[i] = byteString.charCodeAt(i);
+	    }
+	    
+	    // write the ArrayBuffer to a blob, and you're done
+	    var blob = new Blob([ab], {type: mimeString});
+	    return blob;
+	    
+	}
+      function takepicture() {
+          var context = canvas.getContext('2d');
+          if (width && height) {
+              canvas.width = width;
+              canvas.height = height;
+              context.drawImage(video, 0, 0, width, height);
+	      
+              var data = canvas.toDataURL('image/png');
+              photo.setAttribute('src', data);
+              var formdata = new FormData();
+              formdata.append('file',dataURItoBlob(data),'filetoupload');
+              x1 = Math.round(Math.min(boxStartX,boxEndX));
+              x2 = Math.round(Math.max(boxStartX,boxEndX));
+              y1 = Math.round(Math.min(boxStartY,boxEndY));
+              y2 = Math.round(Math.max(boxStartY,boxEndY));
+              formdata.append('x1',x1);
+              formdata.append('x2',x2);
+              formdata.append('y1',y1);
+              formdata.append('y2',y2);
+	      const XHR = new XMLHttpRequest();
+	      XHR.open('POST', 'fileupload/');
+	      XHR.addEventListener('load', function(event){
+		  var prediction = event.target.response;
+		  document.getElementById('model-prediction').innerHTML = prediction;
+	      })
+	      XHR.addEventListener('error',function(error){
+		  console.log('something went wrong');
+	      });
+	      document.getElementById('model-prediction').innerHTML = '...';
+	      XHR.send(formdata);
+          } else {
+              clearphoto();
+          }
+      }
+
+      // Set up our event listener to run the startup process
+      // once loading is complete.
+      window.addEventListener('load', startup, false);
+    })();
+  </script>
+</html>

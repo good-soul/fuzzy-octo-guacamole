@@ -49,7 +49,7 @@ The training is quick and just 5 epochs are enough to produce a 99% accurate mod
 
 
 We see the following confusion matrix which is indicative of a very good model performance.
-![confMat](.Images/confMat.png)
+![confusionMat](.Images/confMat.png)
 
 However the thing of more interest for us is the performace on live user data. For that, we have an app deployed on the google cloud platform [here](https://drive.google.com/file/d/1J4uS84i_BDnjQfh3XwNID9BADqVfDk0B/view?usp=sharing).
 

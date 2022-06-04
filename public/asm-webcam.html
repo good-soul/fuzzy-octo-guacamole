@@ -25,12 +25,19 @@
       .camerabox{
         display: grid;
         grid-template-columns: auto auto auto;
-        grid-template-rows: auto auto auto;
+        grid-template-rows: auto auto auto auto auto;
         width: 480px;
       }
+      #y-slider-label{
+	  writing-mode: vertical-lr;
+	  margin: 0;
+	  text-align: center;
+	  grid-area: 1/1/2/2;
+      }
       #y-center{
-          grid-area: 1/1/2/3;
+          grid-area: 1/2/2/3;
 	  height: 300px;
+	  width: 30px;
 	  z-index: 10;
           -webkit-appearance: slider-vertical;
       }
@@ -39,10 +46,21 @@
 	  z-index: 10;
           grid-area: 2/3/3/4;
       }
+      #x-slider-label{
+	  margin: 0;
+	  text-align: center;
+	  grid-area: 3/3/4/4;
+      }
       #size-slider{
-	  width: 400px;
-          grid-area: 3/3/4/4;
+	  margin-top: 40px;
+	  width: 100%;
+          grid-area: 4/1/5/4;
 	  z-index: 10;
+      }
+      #size-label{
+	  text-align: center;
+	  margin: 0;
+	  grid-area: 5/1/6/4;
       }
       #sign-bounding-box, #photo-sign-bounding-box{
         background-color: transparent;
@@ -70,18 +88,18 @@
       #startbutton {
         display:block;
         background-color: rgba(0, 150, 0, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.7);
+        border: 1px solid black;
         box-shadow: 0px 0px 1px 2px rgba(0, 0, 0, 0.2);
         font-size: 14px;
         font-family: "Lucida Grande", "Arial", sans-serif;
-        color: rgba(255, 255, 255, 1.0);
+        color: black;
         grid-area: 2/1/4/3;
       }
 
       .inputArea {
         margin: 30px auto;
         font-size: 16px;
-        width: 900px;
+        width: 1000px;
         font-family: "Lucida Grande", "Arial", sans-serif;
         display: grid;
         grid-template-columns: auto auto;
@@ -89,8 +107,10 @@
     </style>
   </head>
   <body>
+    <h1 style="text-align: center; font-family: sans-serif; margin-bottom: 80px;">American Sign Language Classifier</h1>
     <div class="inputArea">
       <div class="camerabox">
+	<p id="y-slider-label">Adjust y-cooridinate of the box</p>
         <input type="range" orient="vertical" min="0" max="100" value="75" class="y-slider" id="y-center">
         <div class="camera">
           <video id="video">Video stream not available.</video>
@@ -98,7 +118,9 @@
         </div>
         <button id="startbutton">Take photo</button>
         <input type="range" min="0" max="100" value="25" class="x-slider" id="x-center">
+	<p id="x-slider-label">Adjust x-coordinate of the box</p>
         <input type="range" min="0" max="100" value="75" class="x-slider" id="size-slider">
+	<p id="size-label">Adjust the size of the box</p>
       </div>
       <canvas id="canvas">
       </canvas>
@@ -108,7 +130,10 @@
       </div>
     </div>
     <p style="text-align: center;">
-      <img style="border: none; height: 200px;" id="model-prediction"></img>
+      <img style="border: none; height: 100px;" id="model-prediction"></img>
+    </p>
+    <p style="text-align: center;">
+      <img style="max-width: 1000px;" src="https://storage.googleapis.com/kaggle-datasets-images/3258/5337/0dade1b95b22cceac471b309fc8a8f63/dataset-cover.png">
     </p>
   </body>
   

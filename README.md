@@ -38,3 +38,11 @@ Upscaled 100 x 100 images
 ![Upscaled Images](./Images/100x100.png)
 
 Training images are flip transformed and different degrees of colour normalizations are applied. This is done to mitigate the induces bias of left vs right handedness and to prevent the model from learning the skin-tone of the people doing the hand gestures rather than the countours of their fingers.
+
+# Neural Network Training 
+
+We use fastai library which provide an easy access to pre-trained ResNet models. ResNet34 was found to be very accurate also while keeping runtime for predictions low. Runtime is given importance since the eventual goal is model deployment on the cloud.
+
+The training is quick and just 5 epochs are enough to produce a 99% accurate model on the validation data. Using ResNet50 can result in near 100% accuracy but at the expense of prediction runtimes. The validation accuracy and loss for ResNet34 model we foubd are as follows:
+
+![resnet](./Images/training.png)

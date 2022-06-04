@@ -18,8 +18,17 @@ Over 90 percent of deaf children in the U.S. are born to hearing parents, most o
 
 Most deaf children worldwide do not receive sign language lessons due to lack of local resources.
 
-We want to create a classifier that can identify hand gestures from static images.
+Here, we create a classifier that can identify hand gestures from static images and test on live images captured from a user's webcam.
 
-We want to test the model using live images captured from a user’s webcam.
+We have also made a small web app [here](https://asl.elder-rabbit.com/fuzzy-octo-guacamole/asm-webcam.html) where users can play around with the classifier outputs.
 
-We want to deploy a small web app where users can play around with the classifier outputs.
+
+# Dataset
+
+We use the MNIST style hand gesture recognition dataset from [Kaggle](https://www.kaggle.com/datasets/datamunge/sign-language-mnist)
+
+### Visual representation of the dataset looks as follows:
+
+![Original Images](./Images/28x28.png)
+![Upscaled Images](./Images/100x100.png)
+

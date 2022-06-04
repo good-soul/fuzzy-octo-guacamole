@@ -36,3 +36,5 @@ Original 28 x 28 images
 Upscaled 100 x 100 images
 
 ![Upscaled Images](./Images/100x100.png)
+
+Training images are flip transformed and different degrees of colour normalizations are applied. This is done to mitigate the induces bias of left vs right handedness and to prevent the model from learning the skin-tone of the people doing the hand gestures rather than the countours of their fingers.

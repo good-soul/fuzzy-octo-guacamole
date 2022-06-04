@@ -29,6 +29,5 @@ We use the MNIST style hand gesture recognition dataset from [Kaggle](https://ww
 
 ### Visual representation of the dataset looks as follows:
 
-![Original Images](./Images/28x28.png)
-![Upscaled Images](./Images/100x100.png)
-
+[Original Images](./Images/28x28.png)
+[Upscaled Images](./Images/100x100.png)

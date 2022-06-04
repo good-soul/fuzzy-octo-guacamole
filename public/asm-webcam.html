@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>webcam testing</title>
+    <title>ASL web-demo</title>
     <style>
       #video {
         border: 0px solid black;
@@ -103,12 +103,15 @@
       <canvas id="canvas">
       </canvas>
       <div class="output">
+	<img id="delaytimer" style="display: none;" src="cinema-321.gif" alt="a delay timer fo 3 seconds">
         <img id="photo" alt="The screen capture will appear in this box.">
       </div>
     </div>
-    <h1 style="text-align: center;" id="model-prediction"></h1>
+    <p style="text-align: center;">
+      <img style="border: none; height: 200px;" id="model-prediction"></img>
+    </p>
   </body>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/camanjs/4.0.0/caman.full.min.js"></script>
+  
   <script>
     var xCenterSlider = document.getElementById('x-center');
     var yCenterSlider = document.getElementById('y-center');
@@ -218,10 +221,12 @@
           }
         }, false);
 
-        startbutton.addEventListener('click', function(ev){
-            window.setTimeout(takepicture,3000);
-            ev.preventDefault();
-        }, false);
+          startbutton.addEventListener('click', function(ev){
+	      document.getElementById('delaytimer').style.display = "block"
+	      photo.style.display="none";
+              window.setTimeout(takepicture,3000);
+              ev.preventDefault();
+          }, false);
 
         clearphoto();
       }
@@ -276,6 +281,8 @@
 	      
               var data = canvas.toDataURL('image/png');
               photo.setAttribute('src', data);
+	      photo.style.display = "block";
+	      document.getElementById('delaytimer').style.display = "none";
               var formdata = new FormData();
               formdata.append('file',dataURItoBlob(data),'filetoupload');
               x1 = Math.round(Math.min(boxStartX,boxEndX));
@@ -289,13 +296,13 @@
 	      const XHR = new XMLHttpRequest();
 	      XHR.open('POST', 'fileupload/');
 	      XHR.addEventListener('load', function(event){
-		  var prediction = event.target.response;
-		  document.getElementById('model-prediction').innerHTML = prediction;
+		  var prediction = event.target.response.slice(0,1);
+		  document.getElementById('model-prediction').setAttribute('src',`ABC/${prediction}.jpg`);
 	      })
 	      XHR.addEventListener('error',function(error){
 		  console.log('something went wrong');
 	      });
-	      document.getElementById('model-prediction').innerHTML = '...';
+	      document.getElementById('model-prediction').setAttribute('src','loading.gif');
 	      XHR.send(formdata);
           } else {
               clearphoto();

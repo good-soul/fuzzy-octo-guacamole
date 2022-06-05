@@ -3,6 +3,7 @@
 # Run as "python step_10_staticImage_v4_fastai_Test.py 1_rawinput.png 275 525 700 950"
 #
 
+import time
 import os
 import sys
 import cv2
@@ -37,9 +38,13 @@ image = cv2.imread(filename, 0)
 crop_img = image[x1:x2, y1:y2]
 crop_img = cv2.resize(crop_img, (50, 50))
 
-cv2.imwrite("public/intermediate.png", crop_img)
+tmpFile = str(int(time.time()))+'.png'
 
-img = open_image('public/intermediate.png')
+cv2.imwrite(tmpFile, crop_img)
+#cv2.imwrite("public/intermediate.png", crop_img)
+
+img = open_image(tmpFile)
+#img = open_image('public/intermediate.png')
 
 
 pred_class,pred_idx,outputs = learn_inf.predict(img)
@@ -49,4 +54,5 @@ list_abc = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q',
 
 print (list_abc[int(list[pred_idx])])
 
-#os.remove('intermediate.png')
+os.remove(tmpFile)
+#os.remove('public/intermediate.png')

@@ -76,11 +76,6 @@ Step 4 - Grayscale the image
 
 ![Step 4](./SubFrame/4_grayscale.png)
 
-Step 5 - Resize the image to match training data (however we opted to not downscale user data, instead choosing to upscale training data to get maximum accuracy)
-
-![Step 5](./SubFrame/5_resize.png)
-
-
-A video of the working of the app can also be found [here](https://drive.google.com/file/d/1VxQsXEzxa5l9pijv89AsOjJpGwRB-GDz/view?usp=sharing)
+This grayscale image of the hand is then fed to the model deployed on Google Cloud Platform to give a predcition. A video of the working of the app can also be found [here](https://drive.google.com/file/d/1VxQsXEzxa5l9pijv89AsOjJpGwRB-GDz/view?usp=sharing) and the app itself can be found [here](https://asl.elder-rabbit.com/fuzzy-octo-guacamole/asm-webcam.html)
 
 
